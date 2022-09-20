@@ -1,718 +1,2174 @@
 ---
-swagger: "2.0"
+openapi: 3.0.0
 info:
-  description: "This is a sample server Petstore server.  You can find out more about\
-    \ Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).\
-    \  For this sample, you can use the api key `special-key` to test the authorization\
-    \ filters."
-  version: "1.0.5"
-  title: "Swagger Petstore"
-  termsOfService: "http://swagger.io/terms/"
-  contact:
-    email: "apiteam@swagger.io"
-  license:
-    name: "Apache 2.0"
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "petstore.swagger.io"
-basePath: "/v2"
-tags:
-- name: "pet"
-  description: "Everything about your Pets"
-  externalDocs:
-    description: "Find out more"
-    url: "http://swagger.io"
-- name: "store"
-  description: "Access to Petstore orders"
-- name: "user"
-  description: "Operations about user"
-  externalDocs:
-    description: "Find out more about our store"
-    url: "http://swagger.io"
-schemes:
-- "https"
-- "http"
+  title: Houseasy Central
+  version: 2.0.0
 paths:
-  /pet/{petId}/uploadImage:
+  "/central/wifi":
     post:
+      summary: Connect to wifi
+      description: Tries to connect to a wifi network with the given SSID
       tags:
-      - "pet"
-      summary: "uploads an image"
-      description: ""
-      operationId: "uploadFile"
-      consumes:
-      - "multipart/form-data"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to update"
+      - Wifi
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ConnectWifiRequest"
         required: true
-        type: "integer"
-        format: "int64"
-      - name: "additionalMetadata"
-        in: "formData"
-        description: "Additional data to pass to server"
-        required: false
-        type: "string"
-      - name: "file"
-        in: "formData"
-        description: "file to upload"
-        required: false
-        type: "file"
       responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/ApiResponse"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet:
-    post:
-      tags:
-      - "pet"
-      summary: "Add a new pet to the store"
-      description: ""
-      operationId: "addPet"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/Pet"
-      responses:
-        405:
-          description: "Invalid input"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
+        '200':
+          description: Connection attempt will begin
+        '400':
+          description: Invalid parameter
+  "/central/name":
     put:
+      summary: Update central name
       tags:
-      - "pet"
-      summary: "Update an existing pet"
-      description: ""
-      operationId: "updatePet"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
+      - Central
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CentralName"
         required: true
-        schema:
-          $ref: "#/definitions/Pet"
       responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-        405:
-          description: "Validation exception"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByStatus:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by status"
-      description: "Multiple status values can be provided with comma separated strings"
-      operationId: "findPetsByStatus"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid status value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByTags:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by tags"
-      description: "Multiple tags can be provided with comma separated strings. Use\
-        \ tag1, tag2, tag3 for testing."
-      operationId: "findPetsByTags"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "tags"
-        in: "query"
-        description: "Tags to filter by"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid tag value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-      deprecated: true
-  /pet/{petId}:
-    get:
-      tags:
-      - "pet"
-      summary: "Find pet by ID"
-      description: "Returns a single pet"
-      operationId: "getPetById"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to return"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - api_key: []
+        '200':
+          description: Updated name successfully
+        '400':
+          description: Invalid name
+  "/copied-remotes":
     post:
+      summary: Create a new copied remote
       tags:
-      - "pet"
-      summary: "Updates a pet in the store with form data"
-      description: ""
-      operationId: "updatePetWithForm"
-      consumes:
-      - "application/x-www-form-urlencoded"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet that needs to be updated"
+      - Copied Remotes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateCopiedRemote"
         required: true
-        type: "integer"
-        format: "int64"
-      - name: "name"
-        in: "formData"
-        description: "Updated name of the pet"
-        required: false
-        type: "string"
-      - name: "status"
-        in: "formData"
-        description: "Updated status of the pet"
-        required: false
-        type: "string"
       responses:
-        405:
-          description: "Invalid input"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-    delete:
-      tags:
-      - "pet"
-      summary: "Deletes a pet"
-      description: ""
-      operationId: "deletePet"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "api_key"
-        in: "header"
-        required: false
-        type: "string"
-      - name: "petId"
-        in: "path"
-        description: "Pet id to delete"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /store/order:
-    post:
-      tags:
-      - "store"
-      summary: "Place an order for a pet"
-      description: ""
-      operationId: "placeOrder"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "order placed for purchasing the pet"
-        required: true
-        schema:
-          $ref: "#/definitions/Order"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid Order"
-  /store/order/{orderId}:
+        '200':
+          description: Created Copied Remote successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CopiedRemoteResponse"
+        '400':
+          description: Invalid copied remote data
+        '409':
+          description: Name already exists
     get:
+      summary: Get a list of copied remotes
       tags:
-      - "store"
-      summary: "Find purchase order by ID"
-      description: "For valid response try integer IDs with value >= 1 and <= 10.\
-        \ Other values will generated exceptions"
-      operationId: "getOrderById"
-      produces:
-      - "application/json"
-      - "application/xml"
+      - Copied Remotes
       parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of pet that needs to be fetched"
-        required: true
-        type: "integer"
-        maximum: 10
-        minimum: 1
-        format: "int64"
+      - "$ref": "#/components/parameters/Commands"
       responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-    delete:
-      tags:
-      - "store"
-      summary: "Delete purchase order by ID"
-      description: "For valid response try integer IDs with positive integer value.\
-        \ Negative or non-integer values will generate API errors"
-      operationId: "deleteOrder"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of the order that needs to be deleted"
-        required: true
-        type: "integer"
-        minimum: 1
-        format: "int64"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-  /store/inventory:
+        '200':
+          description: List of copied remotes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/GetCopiedRemoteResponse"
+  "/copied-remotes/{remoteId}":
     get:
+      summary: Get a copied remote by id
       tags:
-      - "store"
-      summary: "Returns pet inventories by status"
-      description: "Returns a map of status codes to quantities"
-      operationId: "getInventory"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "object"
-            additionalProperties:
-              type: "integer"
-              format: "int32"
-      security:
-      - api_key: []
-  /user/createWithArray:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithArrayInput"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
+      - Copied Remotes
       parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
+      - "$ref": "#/components/parameters/CopiedRemoteLocalId"
+      - "$ref": "#/components/parameters/Commands"
       responses:
-        default:
-          description: "successful operation"
-  /user/createWithList:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithListInput"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/{username}:
-    get:
-      tags:
-      - "user"
-      summary: "Get user by user name"
-      description: ""
-      operationId: "getUserByName"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be fetched. Use user1 for testing. "
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/User"
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
+        '200':
+          description: Desired copied remote
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/GetCopiedRemoteResponse"
+        '404':
+          description: Copied Remote not found
     put:
+      summary: Update name of copied remote
       tags:
-      - "user"
-      summary: "Updated user"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUser"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
+      - Copied Remotes
       parameters:
-      - name: "username"
-        in: "path"
-        description: "name that need to be updated"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "Updated user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
+      - "$ref": "#/components/parameters/CopiedRemoteLocalId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateCopiedRemoteRequest"
       responses:
-        400:
-          description: "Invalid user supplied"
-        404:
-          description: "User not found"
+        '200':
+          description: Updated copied remote
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CopiedRemoteResponse"
+        '400':
+          description: Invalid copied remote data
+        '404':
+          description: Copied Remote not found
     delete:
+      summary: Delete a copied remote
       tags:
-      - "user"
-      summary: "Delete user"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUser"
-      produces:
-      - "application/json"
-      - "application/xml"
+      - Copied Remotes
       parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be deleted"
-        required: true
-        type: "string"
+      - "$ref": "#/components/parameters/CopiedRemoteLocalId"
       responses:
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-  /user/login:
-    get:
-      tags:
-      - "user"
-      summary: "Logs user into the system"
-      description: ""
-      operationId: "loginUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "query"
-        description: "The user name for login"
-        required: true
-        type: "string"
-      - name: "password"
-        in: "query"
-        description: "The password for login in clear text"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          headers:
-            X-Expires-After:
-              type: "string"
-              format: "date-time"
-              description: "date in UTC when token expires"
-            X-Rate-Limit:
-              type: "integer"
-              format: "int32"
-              description: "calls per hour allowed by the user"
-          schema:
-            type: "string"
-        400:
-          description: "Invalid username/password supplied"
-  /user/logout:
-    get:
-      tags:
-      - "user"
-      summary: "Logs out current logged in user session"
-      description: ""
-      operationId: "logoutUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters: []
-      responses:
-        default:
-          description: "successful operation"
-  /user:
+        '200':
+          description: Copied Remote deleted successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CopiedRemoteResponse"
+        '400':
+          description: Invalid copied remote data
+        '404':
+          description: Copied Remote not found
+  "/copied-remotes/{remoteId}/commands":
     post:
+      summary: Create a new copied remote command
       tags:
-      - "user"
-      summary: "Create user"
-      description: "This can only be done by the logged in user."
-      operationId: "createUser"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
+      - Copied Remotes
       parameters:
-      - in: "body"
-        name: "body"
-        description: "Created user object"
+      - "$ref": "#/components/parameters/CopiedRemoteLocalId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateCopiedRemoteCommand"
         required: true
-        schema:
-          $ref: "#/definitions/User"
       responses:
-        default:
-          description: "successful operation"
-securityDefinitions:
-  api_key:
-    type: "apiKey"
-    name: "api_key"
-    in: "header"
-  petstore_auth:
-    type: "oauth2"
-    authorizationUrl: "https://petstore.swagger.io/oauth/authorize"
-    flow: "implicit"
-    scopes:
-      read:pets: "read your pets"
-      write:pets: "modify pets in your account"
-definitions:
-  ApiResponse:
-    type: "object"
-    properties:
-      code:
-        type: "integer"
-        format: "int32"
-      type:
-        type: "string"
-      message:
-        type: "string"
-  Category:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Category"
-  Pet:
-    type: "object"
-    required:
-    - "name"
-    - "photoUrls"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      category:
-        $ref: "#/definitions/Category"
-      name:
-        type: "string"
-        example: "doggie"
-      photoUrls:
-        type: "array"
-        xml:
-          wrapped: true
-        items:
-          type: "string"
-          xml:
-            name: "photoUrl"
+        '200':
+          description: Created Copied Remote Command successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CreateCopiedRemoteCommandResponse"
+        '400':
+          description: Invalid copied remote command data
+    get:
+      summary: Get a list of commands from copied remote
       tags:
-        type: "array"
-        xml:
-          wrapped: true
-        items:
-          xml:
-            name: "tag"
-          $ref: "#/definitions/Tag"
-      status:
-        type: "string"
-        description: "pet status in the store"
-        enum:
-        - "available"
-        - "pending"
-        - "sold"
-    xml:
-      name: "Pet"
-  Tag:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Tag"
-  Order:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      petId:
-        type: "integer"
-        format: "int64"
-      quantity:
-        type: "integer"
-        format: "int32"
-      shipDate:
-        type: "string"
-        format: "date-time"
-      status:
-        type: "string"
-        description: "Order Status"
-        enum:
-        - "placed"
-        - "approved"
-        - "delivered"
-      complete:
-        type: "boolean"
-    xml:
-      name: "Order"
-  User:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
-      email:
-        type: "string"
-      password:
-        type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
-    xml:
-      name: "User"
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+      - Copied Remotes
+      parameters:
+      - "$ref": "#/components/parameters/CopiedRemoteLocalId"
+      responses:
+        '200':
+          description: List of copied remote commands
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/CreateCopiedRemoteCommandResponse"
+        '400':
+          description: Invalid Copied Remote Command data
+        '404':
+          description: Copied Remote not found
+  "/copied-remotes/{remoteId}/commands/{commandId}":
+    delete:
+      summary: Delete a copied remote command
+      tags:
+      - Copied Remotes
+      parameters:
+      - "$ref": "#/components/parameters/CopiedRemoteCommandLocalId"
+      responses:
+        '200':
+          description: Copied Remote Command deleted successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CreateCopiedRemoteCommandResponse"
+        '400':
+          description: Invalid Copied Remote Command data
+        '404':
+          description: Copied Remote Command not found
+    put:
+      summary: Update a Copied Remote Command
+      tags:
+      - Copied Remotes
+      parameters:
+      - "$ref": "#/components/parameters/CopiedRemoteCommandLocalId"
+      - "$ref": "#/components/parameters/CopiedRemoteLocalId"
+      responses:
+        '200':
+          description: Copied Remote Command updated successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CreateCopiedRemoteCommandResponse"
+        '400':
+          description: Invalid Copied Remote Command data
+        '404':
+          description: Copied Remote Command not found
+  "/devices":
+    get:
+      summary: Get a list of Devices
+      tags:
+      - Devices
+      description: Get all devices from central
+      parameters:
+      - "$ref": "#/components/parameters/RoomId"
+      - "$ref": "#/components/parameters/ModuleId"
+      - "$ref": "#/components/parameters/DeviceType"
+      responses:
+        '200':
+          description: List of devices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/DeviceResponse"
+  "/devices/{deviceId}":
+    get:
+      summary: Get device by Id
+      tags:
+      - Devices
+      description: Get a device from central
+      parameters:
+      - "$ref": "#/components/parameters/DeviceId"
+      responses:
+        '200':
+          description: Device
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeviceResponse"
+        '404':
+          description: Device not found
+    put:
+      summary: Update Device
+      tags:
+      - Devices
+      description: update a device
+      parameters:
+      - "$ref": "#/components/parameters/DeviceId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateDeviceRequest"
+      responses:
+        '200':
+          description: Device
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UpdateDeviceResponse"
+        '400':
+          description: Invalid device data
+        '404':
+          description: Device or room not found
+  "/infrared-device-manufacturers":
+    get:
+      summary: Get a list of Infrared Device Manufacturers
+      tags:
+      - Infrared Device Manufacturers
+      responses:
+        '200':
+          description: List of Infrared Device Manufacturers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/InfraredDeviceManufacturerResponse"
+  "/infrared-device-manufacturers/{manufacturerId}":
+    get:
+      summary: Get a Infrared Device Manufacturer by id
+      tags:
+      - Infrared Device Manufacturers
+      parameters:
+      - "$ref": "#/components/parameters/InfraredDeviceManufacturerId"
+      responses:
+        '200':
+          description: Desired Infrared Device Manufacturer
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/InfraredDeviceManufacturerResponse"
+        '404':
+          description: Infrared Device Manufacturer not found
+  "/infrared-devices":
+    get:
+      summary: Get a list of Infrared Devices
+      tags:
+      - Infrared Devices
+      parameters:
+      - "$ref": "#/components/parameters/ManufactureID"
+      responses:
+        '200':
+          description: List of Infrared Devices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/InfraredDeviceResponse"
+  "/infrared-devices/{infraredDeviceId}":
+    get:
+      summary: Get an Infrared Device by id
+      tags:
+      - Infrared Devices
+      parameters:
+      - "$ref": "#/components/parameters/InfraredDeviceId"
+      responses:
+        '200':
+          description: Desired Infrared Device
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/InfraredDeviceResponse"
+        '404':
+          description: Infrared Device not found
+  "/modules":
+    post:
+      summary: Pair a new RF module
+      tags:
+      - Modules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateModuleRequest"
+        required: true
+      responses:
+        '200':
+          description: Created Module successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ModuleResponse"
+        '400':
+          description: Invalid module data
+        '409':
+          description: Module already exists
+    get:
+      summary: Get a list of modules
+      tags:
+      - Modules
+      parameters:
+      - "$ref": "#/components/parameters/SerialNumber"
+      responses:
+        '200':
+          description: List of modules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/ModuleResponse"
+  "/modules/unpaired":
+    get:
+      summary: Get a list of available modules for pairing
+      tags:
+      - Modules
+      responses:
+        '200':
+          description: List of available modules for pairing
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/ModulesAvailableResponse"
+  "/modules/pair":
+    post:
+      summary: Pair a new ESP module
+      tags:
+      - Modules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/PairModuleRequest"
+        required: true
+      responses:
+        '200':
+          description: Pairing proccess started
+        '400':
+          description: Invalid module data
+        '409':
+          description: Module already exists
+  "/modules/channel-status":
+    post:
+      summary: Get a list of channel status
+      tags:
+      - Modules
+      responses:
+        '200':
+          description: List of channel status
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/ChannelStatusResponse"
+  "/modules/{moduleId}":
+    get:
+      summary: Get a module by id
+      tags:
+      - Modules
+      parameters:
+      - "$ref": "#/components/parameters/ModuleLocalId"
+      responses:
+        '200':
+          description: Desired module
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ModuleResponse"
+        '404':
+          description: Module not found
+    delete:
+      summary: Delete an module
+      tags:
+      - Modules
+      parameters:
+      - "$ref": "#/components/parameters/ModuleLocalId"
+      responses:
+        '200':
+          description: Module deleted successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ModuleResponse"
+        '404':
+          description: Module not found
+    put:
+      summary: Update module
+      tags:
+      - Modules
+      parameters:
+      - "$ref": "#/components/parameters/ModuleLocalId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateModuleRequest"
+      responses:
+        '200':
+          description: Module update
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ModuleResponse"
+        '400':
+          description: Invalid ModuleId or RoomId
+        '404':
+          description: Module or Room not found
+  "/modules/{moduleId}/control":
+    post:
+      summary: Control module
+      tags:
+      - Modules
+      parameters:
+      - "$ref": "#/components/parameters/ModuleLocalId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ControlModuleRequest"
+      responses:
+        '200':
+          description: Command success
+        '400':
+          description: Invalid command data
+        '500':
+          description: Command couldn't be delivered
+  "/modules/{moduleId}/channels":
+    put:
+      summary: Update module channels
+      tags:
+      - Modules
+      parameters:
+      - "$ref": "#/components/parameters/ModuleLocalId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateChannelRequest"
+      responses:
+        '200':
+          description: List of updated channels
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/ChannelsResponse"
+        '400':
+          description: Invalid channel data
+        '404':
+          description: Module not found
+  "/modules/{moduleId}/infrared-devices":
+    post:
+      summary: Add an infrared device to a module
+      description: Only applies to Infrared modules
+      tags:
+      - Modules
+      parameters:
+      - "$ref": "#/components/parameters/ModuleLocalId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateModuleInfraredDeviceRequest"
+      responses:
+        '200':
+          description: Device added successfully
+        '400':
+          description: Invalid request data
+        '404':
+          description: Module or Infrared device not found
+        '409':
+          description: Infrared device already added
+  "/modules/{moduleId}/infrared-devices/{InfraredDeviceId}":
+    delete:
+      summary: Delete an infrared device from a module
+      description: Only applies to Infrared modules
+      tags:
+      - Modules
+      parameters:
+      - "$ref": "#/components/parameters/ModuleLocalId"
+      - "$ref": "#/components/parameters/InfraredDeviceId"
+      responses:
+        '200':
+          description: Device deleted successfully
+        '400':
+          description: Invalid request data
+        '404':
+          description: Module or Infrared device not found
+  "/modules/{moduleId}/infrared-devices/{infraredDeviceId}":
+    put:
+      summary: Update Module Infrared Device name
+      tags:
+      - Modules
+      parameters:
+      - "$ref": "#/components/parameters/ModuleLocalId"
+      - "$ref": "#/components/parameters/InfraredDeviceId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateModuleInfraredDeviceRequest"
+      responses:
+        '200':
+          description: Module Infrared Device updated
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UpdateModuleInfraredDeviceResponse"
+        '400':
+          description: Invalid Module Infrared Device data
+        '404':
+          description: Module Infrared Device not found
+  "/modules/{moduleId}/copied-remotes":
+    post:
+      summary: Add a copied remote to a module
+      description: Only applies to Infrared modules
+      tags:
+      - Modules
+      parameters:
+      - "$ref": "#/components/parameters/ModuleLocalId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ModuleCopiedRemoteRequest"
+      responses:
+        '200':
+          description: Copied Remote added successfully
+        '400':
+          description: Invalid  Module Copied Remote data
+        '404':
+          description: Module or Copied Remote not found
+        '409':
+          description: Module Copied Remote already added
+  "/modules/{moduleId}/copied-remotes/{remoteId}":
+    put:
+      summary: Update Module Copied Remote name
+      description: Only applies to Infrared modules
+      tags:
+      - Modules
+      parameters:
+      - "$ref": "#/components/parameters/ModuleLocalId"
+      - "$ref": "#/components/parameters/CopiedRemoteLocalId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateModuleCopiedRemoteRequest"
+      responses:
+        '200':
+          description: Module Copied Remote Updated
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ModuleCopiedRemoteResponse"
+        '400':
+          description: Invalid Module Copied Remote data
+        '404':
+          description: Module Copied Remote not found
+    delete:
+      summary: Delete a Copied Remote from a module
+      description: Only applies to Infrared modules
+      tags:
+      - Modules
+      parameters:
+      - "$ref": "#/components/parameters/ModuleLocalId"
+      - "$ref": "#/components/parameters/CopiedRemoteLocalId"
+      responses:
+        '200':
+          description: Copied Remote deleted successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ModuleCopiedRemoteResponse"
+        '400':
+          description: Invalid Module Copied Remote data
+        '404':
+          description: Module or Copied Remote not found
+  "/rooms":
+    post:
+      summary: Create a new room
+      tags:
+      - Rooms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateRoom"
+        required: true
+      responses:
+        '200':
+          description: Created Room successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/RoomResponse"
+        '400':
+          description: Invalid room data
+        '404':
+          description: Module not found
+    get:
+      summary: Get a list of rooms
+      tags:
+      - Rooms
+      parameters:
+      - "$ref": "#/components/parameters/Devices"
+      responses:
+        '200':
+          description: List of rooms
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/GetRoomResponse"
+  "/rooms/{roomId}":
+    put:
+      summary: Update a room
+      tags:
+      - Rooms
+      parameters:
+      - "$ref": "#/components/parameters/RoomLocalId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateRoomRequest"
+      responses:
+        '200':
+          description: Updated room
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/RoomResponse"
+        '400':
+          description: Invalid room data
+        '404':
+          description: Room not found
+    get:
+      summary: Get a room by id
+      tags:
+      - Rooms
+      parameters:
+      - "$ref": "#/components/parameters/RoomLocalId"
+      - "$ref": "#/components/parameters/Devices"
+      responses:
+        '200':
+          description: Desired room
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/GetRoomResponse"
+        '404':
+          description: Room not found
+    delete:
+      summary: Delete a room
+      tags:
+      - Rooms
+      parameters:
+      - "$ref": "#/components/parameters/RoomLocalId"
+      responses:
+        '200':
+          description: Room deleted successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/RoomResponse"
+        '404':
+          description: Room not found
+  "/rooms/{roomId}/modules":
+    put:
+      summary: Update room modules
+      tags:
+      - Rooms
+      parameters:
+      - "$ref": "#/components/parameters/RoomLocalId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateRoomModulesRequest"
+      responses:
+        '200':
+          description: Added modules to room
+        '400':
+          description: Invalid roomId or moduleIds
+        '404':
+          description: Room or Module not found
+  "/routines/":
+    get:
+      summary: Get a list of routines
+      tags:
+      - Routines
+      description: Get all routines from central
+      responses:
+        '200':
+          description: Returning list of routines
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/RoutinesResponse"
+    post:
+      summary: Create a new routine
+      tags:
+      - Routines
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateRoutinesRequest"
+      responses:
+        '200':
+          description: create routine successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CreateRoutinesResponse"
+        '400':
+          description: Invalid routine data
+  "/routines/{routineId}":
+    get:
+      summary: Get a routine by id
+      tags:
+      - Routines
+      parameters:
+      - "$ref": "#/components/parameters/RoutineLocalId"
+      description: Get a routine with the selected id
+      responses:
+        '200':
+          description: Returning selected routine
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/RoutinesResponse"
+        '400':
+          description: Invalid parameter
+        '404':
+          description: routineId not found
+    put:
+      summary: update a routine
+      tags:
+      - Routines
+      parameters:
+      - "$ref": "#/components/parameters/RoutineLocalId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateRoutinesRequest"
+      responses:
+        '200':
+          description: Updated routine
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CreateRoutinesResponse"
+        '400':
+          description: Invalid parameter
+        '404':
+          description: routineId not found
+    delete:
+      summary: delete a routine
+      parameters:
+      - "$ref": "#/components/parameters/RoutineLocalId"
+      tags:
+      - Routines
+      responses:
+        '200':
+          description: Returning selected routine
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/RoutinesResponse"
+        '400':
+          description: Invalid parameter
+        '404':
+          description: routineId not found
+  "/routines/{routineId}/actions/":
+    post:
+      summary: Create a new action
+      tags:
+      - Routines
+      parameters:
+      - "$ref": "#/components/parameters/RoutineLocalId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateActionRequest"
+      responses:
+        '200':
+          description: Created action successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ActionResponse"
+        '400':
+          description: Invalid parameter
+        '404':
+          description: Routine not found
+  "/routines/{routineId}/actions/{actionId}":
+    put:
+      summary: update a action
+      tags:
+      - Routines
+      parameters:
+      - "$ref": "#/components/parameters/RoutineLocalId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateActionRequest"
+      responses:
+        '200':
+          description: Updated action
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ActionResponse"
+        '400':
+          description: Invalid parameter
+        '404':
+          description: Routine not found
+    delete:
+      summary: delete a action
+      tags:
+      - Routines
+      parameters:
+      - "$ref": "#/components/parameters/RoutineLocalId"
+      - "$ref": "#/components/parameters/ActionLocalId"
+      responses:
+        '200':
+          description: Action deleted successfuly
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ActionResponse"
+        '400':
+          description: Invalid action or routineId
+        '404':
+          description: action or routine not found
+  "/routines/{routineId}/schedules/":
+    post:
+      summary: Create a new schedule
+      tags:
+      - Routines
+      parameters:
+      - "$ref": "#/components/parameters/RoutineLocalId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateScheduleRequest"
+      responses:
+        '200':
+          description: Created schedule successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ScheduleResponse"
+        '400':
+          description: Invalid parameter
+        '404':
+          description: Routine not found
+  "/routines/{routineId}/schedules/{scheduleId}":
+    put:
+      summary: update a schedule
+      tags:
+      - Routines
+      parameters:
+      - "$ref": "#/components/parameters/RoutineLocalId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateScheduleRequest"
+      responses:
+        '200':
+          description: Updated schedule
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ScheduleResponse"
+        '400':
+          description: Invalid parameter
+        '404':
+          description: Schedule or routine not found
+    delete:
+      summary: delete a schedule
+      tags:
+      - Routines
+      parameters:
+      - "$ref": "#/components/parameters/RoutineLocalId"
+      - "$ref": "#/components/parameters/ScheduleLocalId"
+      responses:
+        '200':
+          description: Schedule deleted successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ScheduleResponse"
+        '400':
+          description: Invalid scheduleId or routineId
+        '404':
+          description: Schedule or routine not found
+  "/users/login":
+    post:
+      summary: User login
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UserLogin"
+        required: true
+      responses:
+        '200':
+          description: Login Successful
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UserLoginResponse"
+        '403':
+          description: User not included in the whitelist
+components:
+  parameters:
+    Devices:
+      in: query
+      name: devices
+      description: An optional parameter to return the devices that is linked to rooms
+      schema:
+        type: boolean
+        example: true
+      required: false
+    ManufacturerId:
+      in: query
+      name: manufacturerId
+      description: Id of the Manufacturer the Infrared Device belong to
+      schema:
+        type: integer
+        example: 2
+      require: false
+    Commands:
+      in: query
+      name: commands
+      description: An optional parameter to return the commands that belongs to copied
+        remote
+      schema:
+        type: boolean
+        example: true
+      required: false
+    SerialNumber:
+      in: query
+      name: serialNumber
+      description: An optional parameter to filter the module list by Serial Number
+      schema:
+        type: string
+        example: SW2000002085
+      required: false
+    RoomId:
+      in: query
+      name: roomId
+      description: An optional parameter to filter by room
+      schema:
+        type: int
+        example: 2
+      required: false
+    ModuleId:
+      in: query
+      name: moduleId
+      description: An optional parameter to filter by module
+      schema:
+        type: int
+        example: 4
+      required: false
+    DeviceType:
+      in: query
+      name: deviceType
+      description: An optional parameter to filter by Device type
+      schema:
+        type: int
+        example: 1
+      required: false
+    ModuleLocalId:
+      in: path
+      name: moduleId
+      description: Module's local Id
+      schema:
+        type: string
+        example: 60ca698bc89d6020915de238
+      required: true
+    RoomLocalId:
+      in: path
+      name: roomId
+      description: Room's local Id
+      schema:
+        type: string
+        example: 60d0980f27e1623a5678d7a3
+      required: true
+    InfraredDeviceId:
+      in: path
+      name: infraredDeviceId
+      description: Infrared Device's Id
+      schema:
+        type: int
+        example: 3
+      required: true
+    InfraredDeviceManufacturerId:
+      in: path
+      name: manufacturerId
+      description: Infrared Device Manufacturer's Id
+      schema:
+        type: int
+        example: 3
+      required: true
+    CopiedRemoteLocalId:
+      in: path
+      name: remoteId
+      description: Copied Remote's  localId
+      schema:
+        type: string
+        example: 60d0980f27e1623a5678d5a7
+      required: true
+    CopiedRemoteCommandLocalId:
+      in: path
+      name: commandId
+      description: Copied Remote Command's localId
+      schema:
+        type: string
+        example: 60d0980f27e1623a5678d5a7
+      required: true
+    RoutineLocalId:
+      in: path
+      name: routineId
+      description: Routine's local Id
+      schema:
+        type: string
+        example: 60d0980f27e1623a5678d7a3
+      required: true
+    ActionLocalId:
+      in: path
+      name: ActionId
+      description: Action's local Id
+      schema:
+        type: string
+        example: 60d0980f27e1623a5678d7a3
+      required: true
+    ScheduleLocalId:
+      in: path
+      name: scheduleId
+      description: Schedule's local Id
+      schema:
+        type: string
+        example: 60d0980f27e1623a5678d7a3
+      required: true
+    DeviceId:
+      in: path
+      name: deviceId
+      description: Device's Id
+      schema:
+        type: int
+        example: 7
+      required: true
+  schemas:
+    ConnectWifiRequest:
+      properties:
+        ssid:
+          type: string
+          example: CLARO_2G799EA1
+        password:
+          type: string
+          example: 2G799EA1
+        userId:
+          description: Required when first configuring the Central
+          type: int
+          example: 2
+        hidden:
+          description: Set to true if you want to connect to a hidden network
+          type: bool
+          example: false
+          default: false
+      required:
+      - ssid
+    CentralName:
+      properties:
+        name:
+          type: string
+          example: Houseasy Central
+      required:
+      - name
+    CreateCopiedRemote:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Tv Samsung
+        type:
+          type: int
+          example: 3
+      required:
+      - name
+      - type
+    CopiedRemoteResponse:
+      properties:
+        id:
+          type: int
+          example: 1
+        name:
+          type: string
+          example: Tv Samsung
+        type:
+          type: int
+          example: 3
+        localId:
+          type: string
+          example: 61952498872fbd2cbc295549
+    UpdateCopiedRemoteRequest:
+      properties:
+        name:
+          type: string
+          example: Tv Samsung
+      required:
+      - name
+    CreateCopiedRemoteCommand:
+      properties:
+        name:
+          type: string
+          example: Power
+        type:
+          type: int
+          example: 3
+      required:
+      - name
+      - type
+    CreateCopiedRemoteCommandResponse:
+      properties:
+        id:
+          type: int
+          example: 1
+        name:
+          type: string
+          example: Power
+        localId:
+          type: string
+          example: 61952498872fbd2cbc295549
+        type:
+          type: int
+          example: 3
+        remoteId:
+          type: int
+          example: 5
+    UpdateCopiedRemoteCommandRequest:
+      properties:
+        name:
+          type: string
+          example: Tv LG
+      required:
+      - name
+    GetCopiedRemoteResponse:
+      properties:
+        id:
+          type: int
+          example: 1
+        name:
+          type: string
+          example: Tv Samsung
+        type:
+          type: int
+          example: 3
+        localId:
+          type: string
+          example: 61952498872fbd2cbc295585
+        commands:
+          description: The commands that belong to the copied remote
+          type: array
+          items:
+            "$ref": "#/components/schemas/CreateCopiedRemoteCommandResponse"
+    UpdateDeviceRequest:
+      properties:
+        name:
+          description: Device's name
+          type: string
+          example: Luz da Sala
+        roomId:
+          description: Id from device's room
+          type: int
+          example: 2
+        disabled:
+          description: Flag for switch devices, if is disabled or not (only present
+            in switch devices)
+          type: boolean
+          example: true
+    UpdateDeviceResponse:
+      properties:
+        id:
+          description: Device's id
+          type: int
+          example: 654
+        name:
+          description: Device's name
+          type: string
+          example: Luz da Sala
+        moduleId:
+          description: Id from device's module
+          type: int
+          example: 2
+        moduleLocalId:
+          description: LocalId from device's module
+          type: string
+          example: 617c678507e1d2e081asd32a0
+        roomId:
+          description: Id from device's room
+          type: int
+          example: 2
+        roomLocalId:
+          description: LocalId from device's room
+          type: string
+          example: 617c276784451d2e0812bced12a0
+        deviceType:
+          description: The type of the device
+          type: int
+          example: 2
+    DeviceResponse:
+      properties:
+        id:
+          description: Device id
+          type: integer
+          example: 4
+        localId:
+          description: Device local id
+          type: string
+          example: 6178011fd94de808306aa315
+        name:
+          description:
+          type: string
+          example: Luz da sala
+        moduleId:
+          description: Module device id
+          type: integer
+          example: 6
+        moduleLocalId:
+          description: Module device id
+          type: integer
+          example: 617c27507e1d2f0812b9e560
+        roomId:
+          description: room id
+          type: integer
+          example: 4
+        type:
+          description: The type of the device (1 for Switch channels, 2 for IR devices,
+            3 for Copied remotes)
+          type: integer
+          example: 1
+        position:
+          description: The position of the channel. Only present in Switch channels
+            devices
+          type: integer
+          example: 0
+        status:
+          description: The on/off status of the channel. Only present in Switch channels
+            devices
+          type: boolean
+          example: false
+        disabled:
+          description: If the channel is disabled. Only present in Switch channels
+            devices
+          type: boolean
+          example: true
+        infraredDeviceType:
+          description: The type of IR device is. Only present in IR devices
+          type: integer
+          example: 1
+        infraredDeviceId:
+          description: The id of IR device is. Only present in IR devices
+          type: integer
+          example: 4
+        commands:
+          description: The commands that the module can handle. Only present in IR
+            devices
+          type: array
+          items:
+            "$ref": "#/components/schemas/InfraredDeviceCommandsResponse"
+        remoteId:
+          description: Remote id. Only present in copied remotes
+          type: integer
+          example: 5
+        copiedRemoteType:
+          description: The type from copied remote (infraredDeviceType). Only present
+            in copied remotes
+          type: integer
+          example: 1
+        copiedRemoteCommands:
+          description: List of commands. Only present in copied remotes
+          type: array
+          items:
+            "$ref": "#/components/schemas/InfraredDeviceCommandsResponse"
+    InfraredDeviceManufacturerResponse:
+      properties:
+        id:
+          type: int
+          example: 4
+        localId:
+          type: string
+          example: 60ca698bc89d6020915de620
+        name:
+          type: string
+          example: LG
+        imageUrl:
+          type: string
+    InfraredDeviceResponse:
+      properties:
+        id:
+          type: int
+          example: 4
+        localId:
+          type: string
+          example: 60ca698bc89d6020915de545
+        name:
+          type: string
+          example: TV LG
+        type:
+          type: int
+          example: 0
+        manufacturerId:
+          type: int
+          example: 1
+    CreateModuleRequest:
+      type: object
+      properties:
+        moduleIdentifier:
+          type: integer
+          example: 163
+        name:
+          type: string
+          example: IR Sala de Estar
+        channels:
+          description: Required for Switch modules, ignored otherwise. Length must
+            meet the module's channel count
+          type: array
+          items:
+            "$ref": "#/components/schemas/ChannelsRequest"
+      required:
+      - moduleIdentifier
+      - name
+    PairModuleRequest:
+      type: object
+      properties:
+        serialNumber:
+          type: string
+          example: SW2000000675
+        name:
+          type: string
+          example: Power Sala de Estar
+        channels:
+          description: Required for EasyPower modules, ignored otherwise. Array length
+            must meet the module's channel count
+          type: array
+          items:
+            "$ref": "#/components/schemas/ChannelsRequest"
+      required:
+      - serialNumber
+      - name
+    ChannelsRequest:
+      properties:
+        name:
+          type: string
+          example: Luz da Sala
+        disabled:
+          type: boolean
+          example: false
+      required:
+      - name
+      - disabled
+    ModuleResponse:
+      properties:
+        id:
+          type: int
+          example: 4
+        name:
+          type: string
+          example: Easy Power Quarto
+        nodeId:
+          type: int
+          example: 2
+        macAddress:
+          type: string
+          example: a1b2c3d4e5f6
+        type:
+          type: int
+          example: 1
+        channelCount:
+          type: int
+          example: 2
+        serialNumber:
+          type: string
+          example: SW2465798132
+        localId:
+          type: string
+          example: 60ca698bc89d6020915de238
+        roomLocalId:
+          type: string
+          example: 60ccb4eca6adfae886c8a6bb
+        roomId:
+          description: Deprecated. Refer to the device's roomId instead
+          type: int
+          example: 2
+        channels:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ChannelsResponse"
+        infraredDevices:
+          description: Only when it is an infrared module
+          type: array
+          items:
+            "$ref": "#/components/schemas/InfraredDevicesResponse"
+        copiedRemotes:
+          description: Only when it is an infrared module
+          type: array
+          items:
+            "$ref": "#/components/schemas/InfraredDevicesResponse"
+    ChannelsResponse:
+      properties:
+        id:
+          type: int
+          example: 2
+        name:
+          type: string
+          example: Luz do Quarto
+        position:
+          type: int
+          example: 1
+        moduleLocalId:
+          type: string
+          example: 60ca698bc89d6020915de238
+        moduleId:
+          type: int
+          example: 4
+        disabled:
+          type: boolean
+          example: false
+        status:
+          type: boolean
+          example: true
+        localId:
+          type: string
+          example: 60ca69c6a2f8d8e5bc7ab321
+    ChannelStatusResponse:
+      properties:
+        id:
+          type: int
+          example: 2
+        localId:
+          type: string
+          example: 60ca69c6a2f8d8e5bc7ab321
+        status:
+          type: boolean
+          example: true
+    UpdateChannelRequest:
+      properties:
+        channels:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ChannelsRequest"
+      required:
+      - name
+      - disabled
+    ControlModuleRequest:
+      properties:
+        channel:
+          description: Required when controlling Switch modules. Must be between 1
+            and the module's channel count
+          type: int
+          example: 1
+        state:
+          description: Required when controlling Switch modules
+          type: boolean
+          example: true
+        infraredDeviceId:
+          description: Required when controlling infrared modules with a standard
+            remote
+          type: int
+          example: 20
+        remoteId:
+          description: Required when controlling infrared modules with a copied remote
+          type: string
+          example: 60ca69c6a2f8d8e5bc7ag8c2
+        commandType:
+          description: Required when controlling infrared modules
+          type: int
+          example: 1428
+    CreateModuleInfraredDeviceRequest:
+      properties:
+        infraredDeviceId:
+          description: Infrared device to be added
+          type: int
+          example: 3
+        name:
+          description: Name of module infrared device
+          type: string
+          example: Tv Sala
+    DeleteModuleInfraredDeviceRequest:
+      properties:
+        ModuleId:
+          description: Module that contains the infrared device
+          type: int
+          example: 1
+        infraredDeviceId:
+          description: Infrared device to be deleted
+          type: int
+          example: 3
+    InfraredDevicesResponse:
+      properties:
+        id:
+          type: int
+          example: 1
+        name:
+          type: string
+          example: TV Samsung
+        type:
+          type: int
+          example: 0
+        commands:
+          type: array
+          items:
+            "$ref": "#/components/schemas/InfraredDeviceCommandsResponse"
+    InfraredDeviceCommandsResponse:
+      properties:
+        type:
+          type: int
+          example: 10
+    ModulesAvailableResponse:
+      properties:
+        serialNumber:
+          type: string
+          example: IFR123456789
+        moduleIdentifier:
+          description: Used only in RF EasyMinds
+          type: string
+          example: DEV123456789
+          deprecated: true
+        type:
+          type: int
+          example: 2
+        channelCount:
+          description: Only present in EasyPower modules
+          type: int
+          example: 2
+        complement:
+          description: Used only in RF EasyMinds
+          type: int
+          example: 0
+          deprecated: true
+    UpdateModuleRequest:
+      properties:
+        name:
+          type: string
+          example: Easy Power
+        roomId:
+          description: Deprecated. Update each device's roomId instead
+          type: string
+          example: 60ca69c6a2f8d8e5bc7ab321
+      required:
+      - name
+    UpdateModuleInfraredDeviceRequest:
+      properties:
+        name:
+          description: New name of infrared device
+          type: string
+          example: Tv Sala
+    UpdateModuleInfraredDeviceResponse:
+      properties:
+        id:
+          type: int
+          example: 1
+        localId:
+          type: string
+          example: 60ca69c6a2f8d8e5bc7ac877
+        infraredDeviceId:
+          type: int
+          example: 2
+        moduleId:
+          type: int
+          example: 3
+        moduleLocalId:
+          type: string
+          example: 60ca69c6a2f8d8e5bc7ab963
+        name:
+          type: string
+          example: Tv Sala
+    ModuleCopiedRemoteRequest:
+      properties:
+        remoteId:
+          description: Copied remote to be added
+          type: string
+          example: 60ca69c6a2f8d8e5bc7ab899
+        name:
+          description: Name of module copied remote
+          type: string
+          example: Tv do quarto
+      required:
+      - remoteId
+      - name
+    UpdateModuleCopiedRemoteRequest:
+      properties:
+        name:
+          description: New name of Module Copied Remote
+          type: string
+          example: Tv Sala
+    ModuleCopiedRemoteResponse:
+      properties:
+        id:
+          type: int
+          example: 1
+        localId:
+          type: string
+          example: 60ca69c6a2f8d8e5bc7a5a5
+        remoteId:
+          type: int
+          example: 2
+        moduleId:
+          type: int
+          example: 3
+        moduleLocalId:
+          type: string
+          example: 60ca69c6a2f8d8e5bc7ab963
+        name:
+          type: string
+          example: Tv Cozinha
+    CreateRoom:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Sala de jantar
+        image:
+          type: int
+          example: 3
+        modules:
+          description: "(deprecated) array of modules id's"
+          type: array
+          items:
+            type: string
+            example: 60ca698bc89d6020915de238
+        devices:
+          description: array of devices id's
+          type: array
+          items:
+            type: int
+            example: 3
+      required:
+      - name
+      - image
+    RoomResponse:
+      properties:
+        id:
+          type: int
+          example: 1
+        name:
+          type: string
+          example: Sala de jantar
+        image:
+          type: int
+          example: 3
+        localId:
+          type: string
+          example: 60ca69c6a2f8d8e5bc7ab321
+    UpdateRoomRequest:
+      properties:
+        name:
+          type: string
+          example: Cozinha
+        image:
+          type: int
+          example: 2
+        devices:
+          description: Array of Device id's. If set, will update the room's device
+            list. If null, the devices will not be updated
+          type: array
+          items:
+            type: int
+            example: 4
+      required:
+      - name
+      - image
+    UpdateRoomModulesRequest:
+      type: object
+      properties:
+        modules:
+          description: array of modules id's
+          type: array
+          items:
+            type: string
+            example: 60ca698bc89d6020915de238
+    GetRoomResponse:
+      type: object
+      properties:
+        id:
+          description: Room id
+          type: integer
+          example: 4
+        localId:
+          description: Room local id
+          type: string
+          example: 6178032ed94de808306aa318
+        name:
+          description: Room name
+          type: string
+          example: Quarto
+        image:
+          description: Room image
+          type: integer
+          example: 3
+        devices:
+          description: Devices that belong to this room
+          type: array
+          items:
+            "$ref": "#/components/schemas/DevicesRoomResponse"
+    DevicesRoomResponse:
+      properties:
+        id:
+          description: Device id
+          type: integer
+          example: 4
+        localId:
+          description: Device local id
+          type: string
+          example: 6178011fd94de808306aa315
+        name:
+          description:
+          type: string
+          example: Luz da sala
+        moduleId:
+          description: Module device id
+          type: integer
+          example: 6
+        moduleLocalId:
+          description: Module device id
+          type: integer
+          example: 617c27507e1d2f0812b9e560
+        type:
+          description: The type of the device (1 for Switch channels, 2 for IR devices,
+            3 for Copied remotes)
+          type: integer
+          example: 1
+        position:
+          description: The position of the channel. Only present in Switch channels
+            devices
+          type: integer
+          example: 0
+        status:
+          description: The on/off status of the channel. Only present in Switch channels
+            devices
+          type: boolean
+          example: false
+        disabled:
+          description: If the channel is disabled. Only present in Switch channels
+            devices
+          type: boolean
+          example: true
+        infraredDeviceType:
+          description: The type of IR device is. Only present in IR devices
+          type: integer
+          example: 1
+        infraredDeviceId:
+          description: The id of IR device is. Only present in IR devices
+          type: integer
+          example: 4
+        commands:
+          description: The commands that the module can handle. Only present in IR
+            devices
+          type: array
+          items:
+            "$ref": "#/components/schemas/InfraredDeviceCommandsResponse"
+        remoteId:
+          type: integer
+          example: 5
+        copiedRemoteType:
+          type: integer
+          example: 1
+        copiedRemoteCommands:
+          type: array
+          items:
+            "$ref": "#/components/schemas/InfraredDeviceCommandsResponse"
+    RoutinesResponse:
+      properties:
+        id:
+          type: integer
+          example: 3
+          description: Routine id
+        localId:
+          type: string
+          example: 60ca69c6a2f8d8e5bc7ab321
+          description: Routine local id
+        name:
+          type: string
+          example: Chegar em casa
+          description: Name of routine
+        icon:
+          description: Icon of routine
+          type: int
+          example: 2
+        enabled:
+          description: if routine is enabled or not
+          type: boolean
+          example: true
+        running:
+          description: if the routine is running
+          type: boolean
+          example: false
+        actions:
+          description: A list of actions to trigger
+          type: array
+          items:
+            "$ref": "#/components/schemas/ActionResponse"
+        schedules:
+          description: a list of schedules that indicates when execute the actions
+          type: array
+          items:
+            "$ref": "#/components/schemas/ScheduleResponse"
+    CreateRoutinesRequest:
+      properties:
+        name:
+          description: Name of routine
+          type: string
+          example: Chegar em casa
+        icon:
+          description: Icon of routine
+          type: int
+          example: 2
+        enabled:
+          description: if routine is enabled or not
+          type: boolean
+          example: true
+      required:
+      - name
+      - icon
+      - enabled
+    CreateRoutinesResponse:
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: Routine id
+        localId:
+          type: string
+          example: 60ca69c6a2f8d8e5bc7ab321
+          description: Routine local id
+        name:
+          description: Name of routine
+          type: string
+          example: Chegar em casa
+        icon:
+          description: Icon of routine
+          type: int
+          example: 2
+        enabled:
+          description: a enable flag
+          type: boolean
+          example: true
+        running:
+          description: if the routine is runing
+          type: boolean
+          example: false
+    UpdateRoutinesRequest:
+      properties:
+        name:
+          description: Name of routine
+          type: string
+          example: Chegar em casa
+        icon:
+          description: Icon of routine
+          type: int
+          example: 2
+        enabled:
+          description: a enable flag
+          type: boolean
+          example: true
+      required:
+      - name
+      - icon
+      - enabled
+    ActionResponse:
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: Action id
+        localId:
+          type: string
+          example: 60ca69c6a2f8d8e5bc7ab321
+          description: Action local id
+        routineId:
+          type: integer
+          example: 1
+          description: routine id
+        routineLocalId:
+          type: string
+          example: 60ca69c6a2f8d8e5bc7ab321
+          description: routine local id
+        deviceId:
+          description: the device id to be triggered
+          type: integer
+          example: 12
+        deviceLocalId:
+          description: the device id to be triggered
+          type: string
+          example: 603b6aaaa2f2343ec7ab321
+        deviceName:
+          description: the device name
+          type: string
+          example: luz do quarto
+        timeOffSet:
+          description: the offset time in minutes
+          type: int
+          example: 15
+        commands:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ActionCommands"
+    UpdateActionRequest:
+      properties:
+        deviceId:
+          description: the device id to be triggered
+          type: integer
+          example: 12
+        timeOffSet:
+          description: the offset time in minutes
+          type: int
+          example: 15
+        commands:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ActionCommands"
+      required:
+      - deviceId
+      - commands
+      - timeOffSet
+    CreateActionRequest:
+      properties:
+        deviceId:
+          description: the device id to be triggered
+          type: integer
+          example: 12
+        timeOffSet:
+          description: the offset time in minutes
+          type: int
+          example: 15
+        commands:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ActionCommands"
+      required:
+      - deviceId
+      - commands
+      - timeOffSet
+    ScheduleResponse:
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: Schedule id
+        localId:
+          type: string
+          example: 60ca69c6a2f8d8e5bc7ab321
+          description: Schedule local id
+        routineId:
+          type: integer
+          example: 1
+          description: routine id
+        routineLocalId:
+          type: string
+          example: 60ca69c6a2f8d8e5bc7ab321
+          description: routine local id
+        type:
+          description: the type of schedule (0 - execute once, 1 - routine)
+          type: integer
+          example: 1
+        enabled:
+          description: if this schedule is enable or not
+          type: boolean
+          example: true
+        timeZoneOffSet:
+          description: the offset of timezone in minutes
+          type: int
+          example: 180
+        weekDays:
+          description: the decimal number of a bitfield that represents the days of
+            the week. For example, if you need to set monday and friday, the equivalent
+            bitfield is 0100010, and the decimal is 34
+          type: integer
+          example: 19
+        hour:
+          description: the hour of actions need to be executed (0-23)
+          type: int
+          example: 17
+        minute:
+          description: the minute of actions need to be executed (0-59)
+          type: int
+          example: 30
+    UpdateScheduleRequest:
+      properties:
+        type:
+          description: the type of schedule (0 - execute once, 1 - routine)
+          type: integer
+          example: 1
+        enabled:
+          description: if this schedule is enable or not
+          type: boolean
+          example: true
+        timeZoneOffSet:
+          description: the offset of timezone in minutes
+          type: int
+          example: 180
+        weekDays:
+          description: the decimal number of a bitfield that represents the days of
+            the week. For example, if you need to set monday and friday, the equivalent
+            bitfield is 0100010, and the decimal is 34
+          type: integer
+          example: 19
+        hour:
+          description: the hour of actions need to be executed (0-23)
+          type: int
+          example: 17
+        minute:
+          description: the minute of actions need to be executed (0-59)
+          type: int
+          example: 30
+      required:
+      - type
+      - enabled
+      - weekDays
+      - hour
+      - minute
+      - timeZoneOffSet
+    CreateScheduleRequest:
+      properties:
+        type:
+          description: the type of schedule (0 - execute once, 1 - routine)
+          type: integer
+          example: 1
+        enabled:
+          description: if this schedule is enable or not
+          type: boolean
+          example: true
+        timeZoneOffSet:
+          description: the offset of timezone in minutes
+          type: int
+          example: 180
+        weekDays:
+          description: the decimal number of a bitfield that represents the days of
+            the week. For example, if you need to set monday and friday, the equivalent
+            bitfield is 0100010, and the decimal is 34
+          type: integer
+          example: 19
+        hour:
+          description: the hour of actions need to be executed (0-23)
+          type: int
+          example: 17
+        minute:
+          description: the minute of actions need to be executed (0-59)
+          type: int
+          example: 30
+      required:
+      - type
+      - enabled
+      - weekDays
+      - hour
+      - minute
+      - timeZoneOffSet
+    RoutineStateEnum:
+      type: int
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      description: |
+        parameters:
+          * 0 - disable
+          * 1 - enable
+          * 2 - stopped
+          * 3 - running
+      example: 3
+    ActionCommands:
+      properties:
+        key:
+          description: the name of the command
+          type: string
+          example: power
+        value:
+          description: the value of the key
+          type: string
+          example: 'on'
+    UserLogin:
+      type: object
+      properties:
+        userId:
+          type: int
+          example: 1
+      required:
+      - userId
+    UserLoginResponse:
+      type: object
+      properties:
+        auth_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+        expires_in:
+          type: int
+          example: 7200
